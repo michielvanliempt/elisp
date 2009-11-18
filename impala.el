@@ -67,7 +67,9 @@
 (defconst impala-timestamp-exp "\\(Mon\\|Tue\\|Wed\\|Thu\\|Fri\\|Sat\\|Sun\\).*?[0-9]+:[0-9]+:[0-9]+,[0-9]+")
 (defconst impala-prun-cmd-exp "\\(prun .*?00:00\\) \\(\\w*\\) \\([0-9]+\\) \\(.+?\\)\\(--.*\\)")
 (defconst impala-cmd-names-exp
-  (regexp-opt (directory-files "~/impala/lib/x86_64-linux-gcc" nil "^[a-z]" nil)))
+  (if (file-exists-p "~/impala/lib/x86_64-linux-gcc")
+      (regexp-opt (directory-files "~/impala/lib/x86_64-linux-gcc" nil "^[a-z]" nil))
+    "vidset"))
 (defconst impala-local-cmd-exp (concat "\\(" impala-cmd-names-exp ".*?\\) \\(--.*\\)"))
 (defconst impala-command-exp (concat impala-prun-cmd-exp "\\|" impala-local-cmd-exp))
 (defconst impala-reservation-exp "Reservation number [0-9]+: Reserved [0-9]+ hosts for [0-9]+ seconds")
@@ -86,7 +88,8 @@
 (let ((s "...compiling tests..."))
   (string-match impala-script-section-exp s))
 
-(defvar exes (directory-files "~/impala/lib/x86_64-linux-gcc" nil "^[a-z]" nil))
+(and (file-exists-p "~/impala/lib/x86_64-linux-gcc")
+     (defvar exes (directory-files "~/impala/lib/x86_64-linux-gcc" nil "^[a-z]" nil)))
 
 
 ;;;;============================================================================

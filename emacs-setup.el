@@ -1,13 +1,13 @@
 ;; actually this depends on where and how emacs is called...
 (let ((f (selected-frame)))
   (set-frame-size f 210 80)
-  (set-frame-position f 40 60))
+  (set-frame-position f 40 20))
 
 (defun my-add-load-path (subdir)
   "adds a local path"
   (add-to-list 'load-path (concat base-load-path "/" subdir)))
 
-(mapc 'my-add-load-path '("icicles" "egg" "org-6.24b/lisp" "org-6.24b/contrib/lisp"
+(mapc 'my-add-load-path '("icicles" "egg" "org-mode/lisp" "org-mode/contrib/lisp"
 			  "cedet-1.0pre6/common/cedet.el"))
 
 ;;__________________________________________________________________________
@@ -24,12 +24,12 @@
 ;;org-mode
 (require 'org-install)
 
-;;cedet
-(require 'ede)
-(global-ede-mode 1)
-(ede-cpp-root-project "Samples" :file "~/impala/build/gmake/Samples/Makefile")
-(semantic-load-enable-gaudy-code-helpers)
-(semantic-add-system-include "~/impala/" 'c++-mode)
+;;;;cedet
+;;(require 'ede)
+;;(global-ede-mode 1)
+;;(ede-cpp-root-project "Samples" :file "~/impala/build/gmake/Samples/Makefile")
+;;(semantic-load-enable-gaudy-code-helpers)
+;;(semantic-add-system-include "~/impala/" 'c++-mode)
 
 (require 'impala)
 
@@ -259,7 +259,7 @@ find-recent-code-buffer then take the n+1th buffer"
 (global-set-key [(meta shift z)] 'zap-up-to-char-back)
 (global-set-key "\r" 'newline-and-indent)
 (global-set-key "\C-cc" 'comment-region)
-(global-set-key "\C-cv" 'semantic-decoration-include-visit)
+;(global-set-key "\C-cv" 'semantic-decoration-include-visit)
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key [(control x) (control shift b)]  'switch-to-last-hidden-file)
@@ -267,11 +267,11 @@ find-recent-code-buffer then take the n+1th buffer"
 (global-set-key [(control meta shift u)] 'up-list)
 (global-set-key [(f5) (f5)] 'recompile-other-window)
 
-(define-key senator-mode-map [(control shift n)] 'senator-next-tag)
-(define-key senator-mode-map [(control shift p)] 'senator-previous-tag)
-(define-key senator-mode-map (kbd "C-<")  'senator-fold-tag)
-(define-key senator-mode-map (kbd "M-C-<")  'semantic-tag-folding-fold-all)
-(define-key senator-mode-map (kbd "C->")  'senator-unfold-tag)
+;(define-key senator-mode-map [(control shift n)] 'senator-next-tag)
+;(define-key senator-mode-map [(control shift p)] 'senator-previous-tag)
+;(define-key senator-mode-map (kbd "C-<")  'senator-fold-tag)
+;(define-key senator-mode-map (kbd "M-C-<")  'semantic-tag-folding-fold-all)
+;(define-key senator-mode-map (kbd "C->")  'senator-unfold-tag)
 
 ;;__________________________________________________________________________
 ;;;; customization
@@ -289,7 +289,7 @@ find-recent-code-buffer then take the n+1th buffer"
  '(fill-column 80)
  '(global-auto-revert-mode t nil (autorevert))
  '(global-font-lock-mode t nil (font-lock))
- '(global-semantic-tag-folding-mode t nil (semantic-util-modes))
+; '(global-semantic-tag-folding-mode t nil (semantic-util-modes))
  '(icicle-download-dir nil)
  '(indent-tabs-mode nil)
  '(make-backup-files nil)
@@ -297,7 +297,7 @@ find-recent-code-buffer then take the n+1th buffer"
  '(org-level-color-stars-only nil)
  '(pulse-delay 0.01)
  '(pulse-iterations 3)
- '(semantic-idle-work-parse-neighboring-files-flag nil)
+; '(semantic-idle-work-parse-neighboring-files-flag nil)
  '(tab-always-indent nil)
  '(tab-stop-list (quote (4 8 12 16 20 24 28 32 36 40 44 48 52 56 60)))
  '(tab-width 4)
