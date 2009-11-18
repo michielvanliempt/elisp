@@ -3,26 +3,28 @@
   (set-frame-size f 210 80)
   (set-frame-position f 40 60))
 
+(defun my-add-load-path (subdir)
+  "adds a local path"
+  (add-to-list 'load-path (concat base-load-path "/" subdir)))
+
+(mapc 'my-add-load-path '("icicles" "egg" "org-6.24b/lisp" "org-6.24b/contrib/lisp"
+			  "cedet-1.0pre6/common/cedet.el"))
+
 ;;__________________________________________________________________________
 ;;;; modules
-(add-to-list 'load-path "~/.emacs.d")
-(add-to-list 'load-path "~/.emacs.d/icicles")
+
 (load "icicles")
 (icy-mode)
 
 (require 'compile)
 (require 'eshell)
 (require 'ssh)
-(add-to-list 'load-path "~/.emacs.d/egg")
 (require 'egg)
 
 ;;org-mode
-(add-to-list 'load-path "~/.emacs.d/org-6.24b/lisp")
-(add-to-list 'load-path "~/.emacs.d/org-6.24b/contrib/lisp")
 (require 'org-install)
 
 ;;cedet
-(load-file "~/.emacs.d/cedet-1.0pre6/common/cedet.el")
 (require 'ede)
 (global-ede-mode 1)
 (ede-cpp-root-project "Samples" :file "~/impala/build/gmake/Samples/Makefile")
