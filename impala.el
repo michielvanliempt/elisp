@@ -7,8 +7,7 @@
 
 
 ;;;;============================================================================
-;;;; faces, very repetitive; can macros output a defface, deffav and setq at the
-;;;; same time?
+;;;; faces
 (defgroup impala-faces nil
   "Faces for impala mode.")
 
@@ -118,8 +117,6 @@
 ;;;;============================================================================
 ;;;; interactive commands
 
-(defvar impala-run-in-progress nil)
-
 (defmacro define-impala-navigation-fun (item)
   "macro that defines navigation function with name
   \"impala-next-[item]\", which uses variable
@@ -169,6 +166,7 @@
   (define-key map "W" 'impala-previous-warning)
   (define-key map "e" 'impala-next-error)
   (define-key map "E" 'impala-previous-error)
+  (define-key map "g" 'impala-rerun)
   (setq impala-key-map map))
 
 
@@ -177,11 +175,19 @@
   (font-lock-add-keywords nil impala-font-lock-keywords)
   (use-local-map impala-key-map))
 
-(defun impala-run (command &optional dir)
+;;;;============================================================================
+;;; running an impala process
+
+(defvar impala-last-command nil
+  "last command given to impala-run")
+
+(defun impala-run (command)
   "Run command in dir and parse output. Normally command is a
   shell script such as Dennis' do_* scripts or Michiels surf-*
   scripts. No care is taken to see whether command actualy is a
-  impala command."
+  impala command.
+  Copied and adapted from compilation-start in compile.el"
+  (setq impala-last-command command)
   (let* ((thisdir default-directory)
          outwin outbuf)
     (with-current-buffer (setq outbuf (get-buffer-create "*impala*"))
@@ -251,8 +257,7 @@
               ;; Use (point-max) here so that output comes in
               ;; after the initial text,
               ;; regardless of where the user sees point.
-              (set-marker (process-mark proc) (point-max) outbuf)
-              (setq impala-run-in-progress proc ))
+              (set-marker (process-mark proc) (point-max) outbuf))
           ;; No asynchronous processes available.
           (message "Executing `%s'..." command)
           ;; Fake modeline display as if `start-process' were run.
@@ -281,5 +286,15 @@
             (font-lock-fontify-buffer))
           (set-buffer-modified-p nil)
           (message "Executing `%s'...done" command))))))
+
+(defun impala-rerun (&optional edit-command)
+  "rerun the last impala run"
+  (interactive "P")
+  (when edit-command
+    (setq impala-last-command
+          (read-shell-command "impala command: " impala-last-command)))
+  (if impala-last-command
+      (impala-run impala-last-command)
+    (error "no previous command to rerun")))
 
 (provide 'impala)
