@@ -37,13 +37,13 @@
 ;;__________________________________________________________________________
 ;;;; eshell
 (require 'eshell)
-(eshell) ; for some reason some of the custom functions were not recognised
-         ; if ehsell wasn't started yet
-
 (add-hook 'eshell-mode-hook
           (lambda ()
             (local-set-key (kbd "C-z") 'bury-buffer)
             (add-to-list 'eshell-visual-commands "ssh")))
+
+(eshell) ; for some reason some of the custom functions were not recognised
+         ; if ehsell wasn't started yet
 
 (defun eshell/emacs (&rest args)
   "open file(s) in other windows"
