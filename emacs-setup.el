@@ -1,33 +1,35 @@
 ;; actually this depends on where and how emacs is called...
 (let ((f (selected-frame)))
   (set-frame-size f 210 80)
-  (set-frame-position f 40 60))
+  (set-frame-position f 40 20))
+
+(defun my-add-load-path (subdir)
+  "adds a local path"
+  (add-to-list 'load-path (concat base-load-path "/" subdir)))
+
+(mapc 'my-add-load-path '("icicles" "egg" "org-mode/lisp" "org-mode/contrib/lisp"
+			  "cedet-1.0pre6/common/cedet.el"))
 
 ;;__________________________________________________________________________
 ;;;; modules
-(add-to-list 'load-path "~/.emacs.d")
-(add-to-list 'load-path "~/.emacs.d/icicles")
+
 (load "icicles")
 (icy-mode)
 
 (require 'compile)
 (require 'eshell)
 (require 'ssh)
-(add-to-list 'load-path "~/.emacs.d/egg")
 (require 'egg)
 
 ;;org-mode
-(add-to-list 'load-path "~/.emacs.d/org-6.24b/lisp")
-(add-to-list 'load-path "~/.emacs.d/org-6.24b/contrib/lisp")
 (require 'org-install)
 
-;;cedet
-(load-file "~/.emacs.d/cedet-1.0pre6/common/cedet.el")
-(require 'ede)
-(global-ede-mode 1)
-(ede-cpp-root-project "Samples" :file "~/impala/build/gmake/Samples/Makefile")
-(semantic-load-enable-gaudy-code-helpers)
-(semantic-add-system-include "~/impala/" 'c++-mode)
+;;;;cedet
+;;(require 'ede)
+;;(global-ede-mode 1)
+;;(ede-cpp-root-project "Samples" :file "~/impala/build/gmake/Samples/Makefile")
+;;(semantic-load-enable-gaudy-code-helpers)
+;;(semantic-add-system-include "~/impala/" 'c++-mode)
 
 (require 'impala)
 
@@ -257,7 +259,7 @@ find-recent-code-buffer then take the n+1th buffer"
 (global-set-key [(meta shift z)] 'zap-up-to-char-back)
 (global-set-key "\r" 'newline-and-indent)
 (global-set-key "\C-cc" 'comment-region)
-(global-set-key "\C-cv" 'semantic-decoration-include-visit)
+;(global-set-key "\C-cv" 'semantic-decoration-include-visit)
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key [(control x) (control shift b)]  'switch-to-last-hidden-file)
@@ -265,53 +267,54 @@ find-recent-code-buffer then take the n+1th buffer"
 (global-set-key [(control meta shift u)] 'up-list)
 (global-set-key [(f5) (f5)] 'recompile-other-window)
 
-(define-key senator-mode-map [(control shift n)] 'senator-next-tag)
-(define-key senator-mode-map [(control shift p)] 'senator-previous-tag)
-(define-key senator-mode-map (kbd "C-<")  'senator-fold-tag)
-(define-key senator-mode-map (kbd "M-C-<")  'semantic-tag-folding-fold-all)
-(define-key senator-mode-map (kbd "C->")  'senator-unfold-tag)
+;(define-key senator-mode-map [(control shift n)] 'senator-next-tag)
+;(define-key senator-mode-map [(control shift p)] 'senator-previous-tag)
+;(define-key senator-mode-map (kbd "C-<")  'senator-fold-tag)
+;(define-key senator-mode-map (kbd "M-C-<")  'semantic-tag-folding-fold-all)
+;(define-key senator-mode-map (kbd "C->")  'senator-unfold-tag)
 
 ;;__________________________________________________________________________
-;;;; customization
-(custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- '(auto-save-default nil)
- '(case-fold-search t)
- '(column-number-mode t)
- '(cperl-continued-statement-offset 4)
- '(cperl-indent-level 4)
- '(cperl-under-as-char t)
- '(fill-column 80)
- '(global-auto-revert-mode t nil (autorevert))
- '(global-font-lock-mode t nil (font-lock))
- '(global-semantic-tag-folding-mode t nil (semantic-util-modes))
- '(icicle-download-dir nil)
- '(indent-tabs-mode nil)
- '(make-backup-files nil)
- '(org-hide-leading-stars t)
- '(org-level-color-stars-only nil)
- '(pulse-delay 0.01)
- '(pulse-iterations 3)
- '(semantic-idle-work-parse-neighboring-files-flag nil)
- '(tab-always-indent nil)
- '(tab-stop-list (quote (4 8 12 16 20 24 28 32 36 40 44 48 52 56 60)))
- '(tab-width 4)
- '(tool-bar-mode nil))
+;;;; customization copy of stuff in .emacs
+;; (custom-set-variables
+;;   ;; custom-set-variables was added by Custom.
+;;   ;; If you edit it by hand, you could mess it up, so be careful.
+;;   ;; Your init file should contain only one such instance.
+;;   ;; If there is more than one, they won't work right.
+;;  '(auto-save-default nil)
+;;  '(case-fold-search t)
+;;  '(column-number-mode t)
+;;  '(cperl-continued-statement-offset 4)
+;;  '(cperl-indent-level 4)
+;;  '(cperl-under-as-char t)
+;;  '(fill-column 80)
+;;  '(global-auto-revert-mode t nil (autorevert))
+;;  '(global-font-lock-mode t nil (font-lock))
+;; ; '(global-semantic-tag-folding-mode t nil (semantic-util-modes))
+;;  '(icicle-download-dir nil)
+;;  '(indent-tabs-mode nil)
+;;  '(make-backup-files nil)
+;;  '(org-hide-leading-stars t)
+;;  '(org-level-color-stars-only nil)
+;;  '(pulse-delay 0.01)
+;;  '(pulse-iterations 3)
+;; ; '(semantic-idle-work-parse-neighboring-files-flag nil)
+;;  '(tab-always-indent nil)
+;;  '(tab-stop-list (quote (4 8 12 16 20 24 28 32 36 40 44 48 52 56 60)))
+;;  '(tab-width 4)
+;;  '(tool-bar-mode nil))
 
-(custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "white" :foreground "black" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "windows" :family "proggyclean"))))
- '(bold-italic ((t (:slant italic :weight bold :family "courier"))))
- '(font-lock-builtin-face ((((class color) (background light)) (:foreground "Blue"))))
- '(font-lock-comment-face ((((class color) (background light)) (:foreground "DarkGreen"))))
- '(font-lock-constant-face ((((class color) (background light)) (:foreground "blue"))))
- '(font-lock-keyword-face ((((class color) (background light)) (:foreground "Blue"))))
- '(font-lock-string-face ((((class color) (background light)) (:foreground "Brown"))))
- '(font-lock-type-face ((((class color) (background light)) (:foreground "blue"))))
- '(italic ((((supports :underline t)) (:slant italic :family "courier")))))
+;; (custom-set-faces
+;;   ;; custom-set-faces was added by Custom.
+;;   ;; If you edit it by hand, you could mess it up, so be careful.
+;;   ;; Your init file should contain only one such instance.
+;;   ;; If there is more than one, they won't work right.
+;;  '(default ((t (:inherit nil :stipple nil :background "white" :foreground "black" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "windows" :family "proggyclean"))))
+;;  '(bold-italic ((t (:slant italic :weight bold :family "courier"))))
+;;  '(font-lock-builtin-face ((((class color) (background light)) (:foreground "Blue"))))
+;;  '(font-lock-comment-face ((((class color) (background light)) (:foreground "DarkGreen"))))
+;;  '(font-lock-constant-face ((((class color) (background light)) (:foreground "blue"))))
+;;  '(font-lock-keyword-face ((((class color) (background light)) (:foreground "Blue"))))
+;;  '(font-lock-string-face ((((class color) (background light)) (:foreground "Brown"))))
+;;  '(font-lock-type-face ((((class color) (background light)) (:foreground "blue"))))
+;;  '(italic ((((supports :underline t)) (:slant italic :family "courier")))))
+
