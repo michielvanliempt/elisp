@@ -8,7 +8,7 @@
   (add-to-list 'load-path (concat base-load-path "/" subdir)))
 
 (mapc 'my-add-load-path '("icicles" "egg" "org-mode/lisp" "org-mode/contrib/lisp"
-			  "cedet-1.0pre6/common/cedet.el"))
+			  "cedet-1.0pre6/common"))
 
 ;;__________________________________________________________________________
 ;;;; modules
@@ -17,19 +17,11 @@
 (icy-mode)
 
 (require 'compile)
-(require 'eshell)
 (require 'ssh)
 (require 'egg)
 
 ;;org-mode
 (require 'org-install)
-
-;;;;cedet
-;;(require 'ede)
-;;(global-ede-mode 1)
-;;(ede-cpp-root-project "Samples" :file "~/impala/build/gmake/Samples/Makefile")
-;;(semantic-load-enable-gaudy-code-helpers)
-;;(semantic-add-system-include "~/impala/" 'c++-mode)
 
 (require 'impala)
 
@@ -44,6 +36,15 @@
 
 ;;__________________________________________________________________________
 ;;;; eshell
+(require 'eshell)
+(eshell) ; for some reason some of the custom functions were not recognised
+         ; if ehsell wasn't started yet
+
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (local-set-key (kbd "C-z") 'bury-buffer)
+            (add-to-list 'eshell-visual-commands "ssh")))
+
 (defun eshell/emacs (&rest args)
   "open file(s) in other windows"
   (if (null args)
@@ -51,20 +52,22 @@
     (mapc #'find-file-other-window
           (mapcar #'expand-file-name (eshell-flatten-list (reverse args))))))
 
-;; for some reason eshell must be called before this defun, otherwise eshell
-;; still doesn't know what to do
 (defun eshell/make (&rest args)
   (compile (eshell-flatten-and-stringify (cons "make" args))))
-
-(add-hook 'eshell-mode-hook
-          (lambda ()
-            (local-set-key (kbd "C-z") 'bury-buffer)
-            (add-to-list 'eshell-visual-commands "ssh")))
 
 (defun eshell/impala (&rest args)
   (impala-run (eshell-flatten-and-stringify args)))
 ;;__________________________________________________________________________
 ;;; c and cc mode
+;;cedet
+(load-file "~/elisp/cedet-1.0pre6/common/cedet.el")
+(require 'ede)
+(global-ede-mode 1)
+(ede-cpp-root-project "Samples" :file "~/impala/build/gmake/Samples/Makefile")
+(semantic-load-enable-gaudy-code-helpers)
+(semantic-add-system-include "~/impala/" 'c++-mode)
+
+;;general c stuff
 (setq c-mode-hook nil)
 (add-hook 'c-mode-common-hook
           (lambda ()
@@ -81,7 +84,8 @@
 ;;; general settings
 (setq indent-tabs-mode nil) ; never use tabs for indentation (instead use spaces)
 (delete-selection-mode 1) ; Typing will delete the selection
-(setq truncate-partial-width-windows nil) ; No truncation of lines in all windows less than full frame wide
+(setq truncate-partial-width-windows nil) ; No truncation of lines in all
+                                          ; windows less than full frame wide
 (setq truncate-lines nil)
 (fset 'yes-or-no-p 'y-or-n-p)
 
@@ -251,15 +255,14 @@ find-recent-code-buffer then take the n+1th buffer"
 ;;__________________________________________________________________________
 ;;;; key bindings
 
-(global-set-key (kbd "\e \e 1") 'workspace-coding)
-(global-set-key (kbd "\e \e 2") 'workspace-git)
-(global-set-key (kbd "\e \e 3") 'workspace-run)
+(global-set-key [(f5) (1)] 'workspace-coding)
+(global-set-key [(f5) (2)] 'workspace-git)
+(global-set-key [(f5) (3)] 'workspace-run)
 (global-set-key "\C-z" 'eshell)
 (global-set-key "\M-z" 'zap-up-to-char)
 (global-set-key [(meta shift z)] 'zap-up-to-char-back)
 (global-set-key "\r" 'newline-and-indent)
-(global-set-key "\C-cc" 'comment-region)
-;(global-set-key "\C-cv" 'semantic-decoration-include-visit)
+(global-set-key "\C-cc" 'comment-or-uncomment-region)
 (global-set-key "\C-cl" 'org-store-link)
 (global-set-key "\C-ca" 'org-agenda)
 (global-set-key [(control x) (control shift b)]  'switch-to-last-hidden-file)
@@ -267,54 +270,10 @@ find-recent-code-buffer then take the n+1th buffer"
 (global-set-key [(control meta shift u)] 'up-list)
 (global-set-key [(f5) (f5)] 'recompile-other-window)
 
-;(define-key senator-mode-map [(control shift n)] 'senator-next-tag)
-;(define-key senator-mode-map [(control shift p)] 'senator-previous-tag)
-;(define-key senator-mode-map (kbd "C-<")  'senator-fold-tag)
-;(define-key senator-mode-map (kbd "M-C-<")  'semantic-tag-folding-fold-all)
-;(define-key senator-mode-map (kbd "C->")  'senator-unfold-tag)
-
-;;__________________________________________________________________________
-;;;; customization copy of stuff in .emacs
-;; (custom-set-variables
-;;   ;; custom-set-variables was added by Custom.
-;;   ;; If you edit it by hand, you could mess it up, so be careful.
-;;   ;; Your init file should contain only one such instance.
-;;   ;; If there is more than one, they won't work right.
-;;  '(auto-save-default nil)
-;;  '(case-fold-search t)
-;;  '(column-number-mode t)
-;;  '(cperl-continued-statement-offset 4)
-;;  '(cperl-indent-level 4)
-;;  '(cperl-under-as-char t)
-;;  '(fill-column 80)
-;;  '(global-auto-revert-mode t nil (autorevert))
-;;  '(global-font-lock-mode t nil (font-lock))
-;; ; '(global-semantic-tag-folding-mode t nil (semantic-util-modes))
-;;  '(icicle-download-dir nil)
-;;  '(indent-tabs-mode nil)
-;;  '(make-backup-files nil)
-;;  '(org-hide-leading-stars t)
-;;  '(org-level-color-stars-only nil)
-;;  '(pulse-delay 0.01)
-;;  '(pulse-iterations 3)
-;; ; '(semantic-idle-work-parse-neighboring-files-flag nil)
-;;  '(tab-always-indent nil)
-;;  '(tab-stop-list (quote (4 8 12 16 20 24 28 32 36 40 44 48 52 56 60)))
-;;  '(tab-width 4)
-;;  '(tool-bar-mode nil))
-
-;; (custom-set-faces
-;;   ;; custom-set-faces was added by Custom.
-;;   ;; If you edit it by hand, you could mess it up, so be careful.
-;;   ;; Your init file should contain only one such instance.
-;;   ;; If there is more than one, they won't work right.
-;;  '(default ((t (:inherit nil :stipple nil :background "white" :foreground "black" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "windows" :family "proggyclean"))))
-;;  '(bold-italic ((t (:slant italic :weight bold :family "courier"))))
-;;  '(font-lock-builtin-face ((((class color) (background light)) (:foreground "Blue"))))
-;;  '(font-lock-comment-face ((((class color) (background light)) (:foreground "DarkGreen"))))
-;;  '(font-lock-constant-face ((((class color) (background light)) (:foreground "blue"))))
-;;  '(font-lock-keyword-face ((((class color) (background light)) (:foreground "Blue"))))
-;;  '(font-lock-string-face ((((class color) (background light)) (:foreground "Brown"))))
-;;  '(font-lock-type-face ((((class color) (background light)) (:foreground "blue"))))
-;;  '(italic ((((supports :underline t)) (:slant italic :family "courier")))))
+(define-key senator-mode-map "\C-cv" 'semantic-decoration-include-visit)
+(define-key senator-mode-map [(control shift n)] 'senator-next-tag)
+(define-key senator-mode-map [(control shift p)] 'senator-previous-tag)
+(define-key senator-mode-map (kbd "C-<")  'senator-fold-tag)
+(define-key senator-mode-map (kbd "M-C-<")  'semantic-tag-folding-fold-all)
+(define-key senator-mode-map (kbd "C->")  'senator-unfold-tag)
 
