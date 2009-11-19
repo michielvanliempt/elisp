@@ -161,14 +161,25 @@
      )
     (delete-other-windows)))
 
+(defun switch-to-buffer-or-window (buffer-name &optional other-window)
+  "If the buffer is active in a window, select that window.
+Otherwise switch to the buffer.
+
+If other-window is t the buffer will be opened in another window."
+  (interactive "Bswitch to buffer:\nP")
+  (let ((already-open (get-buffer-window buffer-name))) 
+    (if already-open
+        (select-window already-open)
+      (if other-window
+          (select-window (get-buffer-window (switch-to-buffer-other-window buffer-name)))
+        (switch-to-buffer buffer-name)))))
 
 (defun recompile-other-window ()
   "find last compilation and recompile, error if there was no
 previous compilation"
   (interactive)
   (progn
-    (select-window (or (get-buffer-window "*compilation*")
-                       (get-buffer-window (switch-to-buffer-other-window "*compilation*"))))
+    (switch-to-buffer-or-window "*compilation*" t)
     (if (string= mode-name "Compilation")
         (recompile)
       (progn
@@ -178,6 +189,13 @@ previous compilation"
 
 (defvar recent-code-buffer-list-depth 0)
 (defvar recent-special-buffer-list-depth 0)
+
+(defun switch-to-impala-buffer ()
+  "switch to buffer named *impala* if it exists"
+  (interactive)
+  (switch-to-buffer-or-window "*impala*" nil)
+  (unless (string= mode-name "impala")
+    (kill-buffer)))
 
 (defun find-recent-special-buffer ()
   "cycle through list of buffer and return first one with code
@@ -213,8 +231,6 @@ find-recent-code-buffer then take the n+1th buffer"
         (setq recent-code-buffer-list-depth 1))
     (switch-to-buffer (nth recent-code-buffer-list-depth code-buffer-list))))
 
-(global-set-key (kbd "<f6> c") 'find-recent-code-buffer)
-(global-set-key (kbd "<f6> s") 'find-recent-special-buffer)
 
 
 (defun last-hidden-file-buffer ()
@@ -255,20 +271,24 @@ find-recent-code-buffer then take the n+1th buffer"
 ;;__________________________________________________________________________
 ;;;; key bindings
 
-(global-set-key [(f5) (1)] 'workspace-coding)
-(global-set-key [(f5) (2)] 'workspace-git)
-(global-set-key [(f5) (3)] 'workspace-run)
-(global-set-key "\C-z" 'eshell)
-(global-set-key "\M-z" 'zap-up-to-char)
-(global-set-key [(meta shift z)] 'zap-up-to-char-back)
 (global-set-key "\r" 'newline-and-indent)
-(global-set-key "\C-cc" 'comment-or-uncomment-region)
-(global-set-key "\C-cl" 'org-store-link)
-(global-set-key "\C-ca" 'org-agenda)
+(global-set-key (kbd "C-c c") 'comment-or-uncomment-region)
+(global-set-key (kbd "C-c l") 'org-store-link)
+(global-set-key (kbd "C-c a") 'org-agenda)
+(global-set-key (kbd "C-z") 'eshell)
+(global-set-key (kbd "M-z") 'zap-up-to-char)
+(global-set-key [(meta shift z)] 'zap-up-to-char-back)
 (global-set-key [(control x) (control shift b)]  'switch-to-last-hidden-file)
 (global-set-key (kbd "C-x C-b") 'buffer-menu)
 (global-set-key [(control meta shift u)] 'up-list)
-(global-set-key [(f5) (f5)] 'recompile-other-window)
+(global-set-key (kbd "<f5> <f5>") 'recompile-other-window)
+(global-set-key (kbd "<f5> 1") 'workspace-coding)
+(global-set-key (kbd "<f5> 2") 'workspace-git)
+(global-set-key (kbd "<f5> 3") 'workspace-run)
+(global-set-key (kbd "<f5> i") 'switch-to-impala-buffer)
+(global-set-key (kbd "<f5> c") 'find-recent-code-buffer)
+(global-set-key (kbd "<f5> s") 'find-recent-special-buffer)
+(global-set-key (kbd "<f5> e") 'egg-status)
 
 (define-key senator-mode-map "\C-cv" 'semantic-decoration-include-visit)
 (define-key senator-mode-map [(control shift n)] 'senator-next-tag)
