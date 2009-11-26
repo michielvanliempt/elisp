@@ -149,17 +149,10 @@
   (progn
     (cd "~/impala")
     (egg-status)
-    (select-window
-     (or (get-window-with-predicate
-          (lambda (window)
-            (save-current-buffer
-              (set-buffer (window-buffer window))
-              (string= mode-name "Egg-Status"))))
-         (progn
-           (error "egg window didn't open?")
-           select-window))
-     )
-    (delete-other-windows)))
+    (switch-to-buffer-or-window "*impala-status@/home4/mliempt/impala/.git*")
+    (delete-other-windows)
+    (switch-to-buffer-or-window "*impala-log@/home4/mliempt/impala/.git*" t)
+    ))
 
 (defun switch-to-buffer-or-window (buffer-name &optional other-window)
   "If the buffer is active in a window, select that window.
@@ -195,6 +188,13 @@ previous compilation"
   (interactive)
   (switch-to-buffer-or-window "*impala*" nil)
   (unless (string= mode-name "impala")
+    (kill-buffer)))
+
+(defun switch-to-orgmode-buffer ()
+  "switch to buffer named impala.org if it exists"
+  (interactive)
+  (switch-to-buffer-or-window "impala.org" nil)
+  (unless (string= mode-name "Org")
     (kill-buffer)))
 
 (defun find-recent-special-buffer ()
@@ -286,6 +286,7 @@ find-recent-code-buffer then take the n+1th buffer"
 (global-set-key (kbd "<f5> 2") 'workspace-git)
 (global-set-key (kbd "<f5> 3") 'workspace-run)
 (global-set-key (kbd "<f5> i") 'switch-to-impala-buffer)
+(global-set-key (kbd "<f5> o") 'switch-to-orgmode-buffer)
 (global-set-key (kbd "<f5> c") 'find-recent-code-buffer)
 (global-set-key (kbd "<f5> s") 'find-recent-special-buffer)
 (global-set-key (kbd "<f5> e") 'egg-status)
