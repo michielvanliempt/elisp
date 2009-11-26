@@ -177,6 +177,10 @@
   "mode for browsing / navigating output of a impala run"
   (font-lock-add-keywords nil impala-font-lock-keywords)
   (use-local-map impala-key-map))
+;; (define-compilation-mode impala-mode "impala"
+;;   "mode for browsing / navigating output of a impala run"
+;;   (font-lock-add-keywords nil impala-font-lock-keywords)
+;;   (use-local-map impala-key-map))
 
 ;;;;============================================================================
 ;;; running an impala process
