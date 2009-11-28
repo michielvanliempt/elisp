@@ -60,12 +60,19 @@
 ;;__________________________________________________________________________
 ;;; c and cc mode
 ;;cedet
-(load-file "~/elisp/cedet-1.0pre6/common/cedet.el")
-(require 'ede)
-(global-ede-mode 1)
-(ede-cpp-root-project "Samples" :file "~/impala/build/gmake/Samples/Makefile")
-(semantic-load-enable-gaudy-code-helpers)
-(semantic-add-system-include "~/impala/" 'c++-mode)
+(unless (equal location 'home)
+  (load-file "~/elisp/cedet-1.0pre6/common/cedet.el")
+  (require 'ede)
+  (global-ede-mode 1)
+  (ede-cpp-root-project "Samples" :file "~/impala/build/gmake/Samples/Makefile")
+  (semantic-load-enable-gaudy-code-helpers)
+  (semantic-add-system-include "~/impala/" 'c++-mode)
+  (define-key senator-mode-map "\C-cv" 'semantic-decoration-include-visit)
+  (define-key senator-mode-map [(control shift n)] 'senator-next-tag)
+  (define-key senator-mode-map [(control shift p)] 'senator-previous-tag)
+  (define-key senator-mode-map (kbd "C-<")  'senator-fold-tag)
+  (define-key senator-mode-map (kbd "M-C-<")  'semantic-tag-folding-fold-all)
+  (define-key senator-mode-map (kbd "C->")  'senator-unfold-tag))
 
 ;;general c stuff
 (setq c-mode-hook nil)
@@ -290,11 +297,4 @@ find-recent-code-buffer then take the n+1th buffer"
 (global-set-key (kbd "<f5> c") 'find-recent-code-buffer)
 (global-set-key (kbd "<f5> s") 'find-recent-special-buffer)
 (global-set-key (kbd "<f5> e") 'egg-status)
-
-(define-key senator-mode-map "\C-cv" 'semantic-decoration-include-visit)
-(define-key senator-mode-map [(control shift n)] 'senator-next-tag)
-(define-key senator-mode-map [(control shift p)] 'senator-previous-tag)
-(define-key senator-mode-map (kbd "C-<")  'senator-fold-tag)
-(define-key senator-mode-map (kbd "M-C-<")  'semantic-tag-folding-fold-all)
-(define-key senator-mode-map (kbd "C->")  'senator-unfold-tag)
 
