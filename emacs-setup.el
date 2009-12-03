@@ -125,34 +125,28 @@
   (interactive "p\ncZap back to char: ")
   (zap-up-to-char (- arg) char))
 
-(defun workspace-run ()
-  (interactive)
-  (progn
-    (delete-other-windows)
-    (eshell)
-    (split-window-horizontally (let ((w (window-width)))
-                                 (if (> w 150)
-                                     (- w 50)
-                                   (* 2 (/ w 3)))))
-    (split-window-vertically -10)
-    (other-window 1)
-    (switch-to-buffer "*ssh*")
-    (unless (string= mode-name "Term")
-      (kill-buffer)
-      (eshell-command "ssh node445"))
-    (other-window 1)
-    (find-file "~/VideoSearch/voc2007devel/surf-forest")
-    (other-window 1)))
+(defun kill-ring-save-line (arg)
+  (interactive "p")
+  (let (start end)
+    (if (< arg 0)
+        (setq start (+ arg 2) end 2)
+      (setq start 1 end (+ arg 1)))
+    (kill-ring-save (line-beginning-position start) (line-beginning-position end))
+    end))
 
-(defun workspace-git ()
-  (interactive)
-  (progn
-    (cd "~/impala")
-    (egg-status)
-    (switch-to-buffer-or-window "*impala-status@/home4/mliempt/impala/.git*")
-    (delete-other-windows)
-    (switch-to-buffer-or-window "*impala-log@/home4/mliempt/impala/.git*" t)
-    ))
+(defun duplicate-line (arg)
+  (interactive "p")
+  (beginning-of-line (kill-ring-save-line arg))
+  (yank '(1)))
+
+(defun kill-whole-line (arg)
+  (interactive "p")
+  (kill-line (if (< arg 0) (+ arg 1) 0))
+  (kill-line (if (< arg 1) 1 arg)))
+
+;;______________________________________
+;;; window and buffer functions
+
 
 (defun switch-to-buffer-or-window (buffer-name &optional other-window)
   "If the buffer is active in a window, select that window.
@@ -249,6 +243,36 @@ find-recent-code-buffer then take the n+1th buffer"
   (interactive)
   (let ((buf (last-hidden-file-buffer)))
     (switch-to-buffer (or buf *scratch*))))
+(defun workspace-run ()
+  (interactive)
+  (progn
+    (delete-other-windows)
+    (eshell)
+    (split-window-horizontally (let ((w (window-width)))
+                                 (if (> w 150)
+                                     (- w 50)
+                                   (* 2 (/ w 3)))))
+    (split-window-vertically -10)
+    (other-window 1)
+    (switch-to-buffer "*ssh*")
+    (unless (string= mode-name "Term")
+      (kill-buffer)
+      (eshell-command "ssh node445"))
+    (other-window 1)
+    (find-file "~/VideoSearch/voc2007devel/surf-forest")
+    (other-window 1)))
+
+;;______________________________________
+;;; 'workspace' functions
+
+(defun workspace-git ()
+  (interactive)
+  (progn
+    (cd "~/impala")
+    (egg-status)
+    (switch-to-buffer-or-window "*impala-status@/home4/mliempt/impala/.git*")
+    (delete-other-windows)
+    (switch-to-buffer-or-window "*impala-log@/home4/mliempt/impala/.git*" t)))
 
 (defun workspace-coding ()
   (interactive)
@@ -278,9 +302,12 @@ find-recent-code-buffer then take the n+1th buffer"
 (global-set-key (kbd "C-z") 'eshell)
 (global-set-key (kbd "M-z") 'zap-up-to-char)
 (global-set-key [(meta shift z)] 'zap-up-to-char-back)
+(global-set-key [(meta shift d)] 'kill-whole-line)
 (global-set-key [(control x) (control shift b)]  'switch-to-last-hidden-file)
 (global-set-key (kbd "C-x C-b") 'buffer-menu)
 (global-set-key [(control meta shift u)] 'up-list)
+(global-set-key [(control meta shift k)] 'duplicate-line)
+(global-set-key [(meta shift k)] 'kill-ring-save-line)
 (global-set-key (kbd "<f5> <f5>") 'recompile-other-window)
 (global-set-key (kbd "<f5> 1") 'workspace-coding)
 (global-set-key (kbd "<f5> 2") 'workspace-git)
