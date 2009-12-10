@@ -1,4 +1,5 @@
-(defvar base-load-path "~/elisp")
+(defconst location 'fs4)
+(defconst base-load-path "~/elisp")
 (add-to-list 'load-path base-load-path)
 (add-to-list 'load-path (concat base-load-path "/mystuff"))
 (load "emacs-setup")
