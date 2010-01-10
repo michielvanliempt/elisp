@@ -45,12 +45,17 @@
 (eshell) ; for some reason some of the custom functions were not recognised
          ; if ehsell wasn't started yet
 
-(defun eshell/emacs (&rest args)
+(defun eshell/o (&rest args)
   "open file(s) in other windows"
   (if (null args)
       (bury-buffer)
     (mapc #'find-file-other-window
           (mapcar #'expand-file-name (eshell-flatten-list (reverse args))))))
+
+(defun eshell/v (&rest args)
+  "view file(s)"
+  (mapc #'view-file
+        (mapcar #'expand-file-name (eshell-flatten-list (reverse args)))))
 
 (defun eshell/make (&rest args)
   (compile (eshell-flatten-and-stringify (cons "make" args))))
@@ -86,6 +91,30 @@
           (lambda ()
             (setq c-basic-offset 4)))
 (setq c-recognize-knr-p nil) ; speedup: dont look for old-style functions
+
+
+;;__________________________________________________________________________
+;; clojure
+(defun find-jars-in (folder-list)
+  (mapcan (lambda (folder)
+            (when (file-directory-p folder)
+              (directory-files folder t ".jar$")))
+          folder-list))
+
+;;; eval after load?
+;; (setq swank-clojure-extra-classpaths (append swank-clojure-extra-classpaths
+;;                                              '("~/coding/clj/penumbra"
+;;                                                "~/coding/clj/penumbra/src")
+;;                                              (find-jars-in '("~/coding/clj/penumbra/lib/")))
+;;       swank-clojure-library-paths (append swank-clojure-library-paths
+;;                                           '("~/coding/clj/penumbra/native/macosx/x86")))
+
+;;;;;;;;;; in order to have different commands for clojure-master and clojure-new
+;; we could make different slime commands: then we have to set the program
+;; commands ourselves... (see value of var)
+;; (setq slime-lisp-implementations
+;;       '(
+;;         (clojure ("/Users/pinochle/bin/clojure") :init swank-clojure-init)))
 
 ;;__________________________________________________________________________
 ;;; general settings
@@ -131,6 +160,10 @@
   "Kill backwards to, but not including ARGth occurence of CHAR"
   (interactive "p\ncZap back to char: ")
   (zap-up-to-char (- arg) char))
+
+(defun word-count ()
+  (interactive)
+  (message "Word count: %s" (how-many "\\w+" (point-min) (point-max))))
 
 (defun kill-ring-save-line (arg)
   (interactive "p")
@@ -324,4 +357,3 @@ find-recent-code-buffer then take the n+1th buffer"
 (global-set-key (kbd "<f5> c") 'find-recent-code-buffer)
 (global-set-key (kbd "<f5> s") 'find-recent-special-buffer)
 (global-set-key (kbd "<f5> e") 'egg-status)
-
