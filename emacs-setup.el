@@ -10,6 +10,17 @@
 (mapc 'my-add-load-path '("icicles" "egg" "org-mode/lisp" "org-mode/contrib/lisp"
 			  "cedet-1.0pre6/common"))
 
+;;; This was installed by package-install.el.
+;;; This provides support for the package system and
+;;; interfacing with ELPA, the package archive.
+;;; Move this code earlier if you want to reference
+;;; packages in your .emacs.
+(when
+    (load
+     (expand-file-name "~/elisp/elpa/package.el"))
+  (package-initialize))
+
+
 ;;__________________________________________________________________________
 ;;;; modules
 
@@ -102,12 +113,13 @@
           folder-list))
 
 ;;; eval after load?
-;; (setq swank-clojure-extra-classpaths (append swank-clojure-extra-classpaths
-;;                                              '("~/coding/clj/penumbra"
-;;                                                "~/coding/clj/penumbra/src")
-;;                                              (find-jars-in '("~/coding/clj/penumbra/lib/")))
-;;       swank-clojure-library-paths (append swank-clojure-library-paths
-;;                                           '("~/coding/clj/penumbra/native/macosx/x86")))
+(require 'swank-clojure)
+(setq swank-clojure-extra-classpaths (append swank-clojure-extra-classpaths
+                                             '("~/coding/clj/penumbra"
+                                               "~/coding/clj/penumbra/src")
+                                             (find-jars-in '("~/coding/clj/penumbra/lib/")))
+      swank-clojure-library-paths (append swank-clojure-library-paths
+                                          '("~/coding/clj/penumbra/native/macosx/x86")))
 
 ;;;;;;;;;; in order to have different commands for clojure-master and clojure-new
 ;; we could make different slime commands: then we have to set the program
