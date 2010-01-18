@@ -1,3 +1,5 @@
+(defconst impala-root (getenv "IMPALAROOT"))
+
 ;; actually this depends on where and how emacs is called...
 (let ((f (selected-frame)))
   (set-frame-size f 210 80)
@@ -63,9 +65,9 @@
 (load-file "~/elisp/cedet-1.0pre6/common/cedet.el")
 (require 'ede)
 (global-ede-mode 1)
-(ede-cpp-root-project "Samples" :file "~/impala/build/gmake/Samples/Makefile")
+(ede-cpp-root-project "Samples" :file (concat impala-root "/build/gmake/Samples/Makefile"))
 (semantic-load-enable-gaudy-code-helpers)
-(semantic-add-system-include "~/impala/" 'c++-mode)
+(semantic-add-system-include impala-root 'c++-mode)
 
 ;;general c stuff
 (setq c-mode-hook nil)
@@ -147,7 +149,7 @@
 (defun workspace-git ()
   (interactive)
   (progn
-    (cd "~/impala")
+    (cd impala-root)
     (egg-status)
     (select-window
      (or (get-window-with-predicate
@@ -157,8 +159,7 @@
               (string= mode-name "Egg-Status"))))
          (progn
            (error "egg window didn't open?")
-           select-window))
-     )
+           select-window)))
     (delete-other-windows)))
 
 (defun switch-to-buffer-or-window (buffer-name &optional other-window)
@@ -253,7 +254,7 @@ find-recent-code-buffer then take the n+1th buffer"
 (defun workspace-coding ()
   (interactive)
   (progn
-    (cd "~/impala")
+    (cd impala-root)
     (switch-to-buffer "impala.org")
     (unless (string= mode-name "Org")
       (kill-buffer)
