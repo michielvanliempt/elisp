@@ -3,8 +3,8 @@
 (defvar aquamacs-140-custom-file-upgraded t)
 (unless (fboundp 'auto-detect-longlines) (defun auto-detect-longlines () t))
 
-
-(defvar base-load-path "~/elisp")
+(defconst location 'home)
+(defconst base-load-path "~/elisp")
 (add-to-list 'load-path base-load-path)
 (add-to-list 'load-path (concat base-load-path "/mystuff"))
 (load "emacs-setup")
@@ -49,3 +49,5 @@
  '(font-lock-string-face ((((class color) (background light)) (:foreground "Brown"))))
  '(font-lock-type-face ((((class color) (background light)) (:foreground "blue"))))
  '(italic ((((supports :underline t)) (:slant italic :family "courier")))))
+
+

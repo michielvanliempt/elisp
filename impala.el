@@ -63,7 +63,8 @@
 (defconst impala-warning-exp (make-ilog-regexp "WARN"))
 (defconst impala-error-exp (make-ilog-regexp "ERROR"))
 (defconst impala-error-server-exp "ERROR \\[Impala.Util.Channel \\] SendRequest.*?:.*?:.*?-\\(.*\\)")
-(defconst impala-timestamp-exp "\\(Mon\\|Tue\\|Wed\\|Thu\\|Fri\\|Sat\\|Sun\\).*?[0-9]+:[0-9]+:[0-9]+,[0-9]+")
+(defconst impala-timestamp-exp
+  "\\(Mon\\|Tue\\|Wed\\|Thu\\|Fri\\|Sat\\|Sun\\).*?[0-9]+:[0-9]+:[0-9]+,[0-9]+")
 (defconst impala-prun-cmd-exp "\\(prun .*?00:00\\) \\(\\w*\\) \\([0-9]+\\) \\(.+?\\)\\(--.*\\)")
 (defconst impala-cmd-names-exp
   (if (file-exists-p "~/impala/lib/x86_64-linux-gcc")
@@ -71,10 +72,17 @@
     "vidset"))
 (defconst impala-local-cmd-exp (concat "\\(" impala-cmd-names-exp ".*?\\) \\(--.*\\)"))
 (defconst impala-command-exp (concat impala-prun-cmd-exp "\\|" impala-local-cmd-exp))
-(defconst impala-reservation-exp "Reservation number [0-9]+: Reserved [0-9]+ hosts for [0-9]+ seconds")
+(defconst impala-reservation-exp
+  "Reservation number [0-9]+: Reserved [0-9]+ hosts for [0-9]+ seconds")
 (defconst impala-run-on-exp "Run on [0-9]+ hosts for [0-9]+ seconds from .*")
 (defconst impala-nodes-exp ":\\( node[0-9]+/[0-9]+\\)+")
 (defconst impala-prun-error-exp "\\(Prun fatal error:\\)\\(.*\\)")
+(defconst impala-teamcity-test-ok-exp
+  "\\(##teamcity\\[\\)\\(testFinished\\)\\( name='[a-zA-Z:]*::\\)\\([a-z-A-Z]*\\)\\(']\\)")
+(defconst impala-teamcity-test-failed-exp
+  "\\(##teamcity\\[\\)\\(testFailed\\)\\(.*|n at \\)\\(.*\\)\\(|n.*\\)")
+(defconst impala-teamcity-all-exp
+  "##teamcity.*")
 (defconst impala-separator-exp "^=*$")
 (defconst impala-script-section-exp "^\\.\\.\\..*\\.\\.\\.$")
 
@@ -114,6 +122,15 @@
         (,impala-run-on-exp . impala-bullshit-face)
         (,impala-nodes-exp . impala-bullshit-face)
         (,impala-prun-error-exp (1 impala-command-small-face) (2 compilation-error-face))
+        (,impala-teamcity-test-ok-exp (1 impala-bullshit-face) (2 compilation-info-face)
+                                      (3 impala-bullshit-face) (4 compilation-info-face)
+                                      (5 impala-bullshit-face))
+        (,impala-teamcity-test-failed-exp (1 impala-bullshit-face) (2 compilation-error-face)
+                                          (3 impala-bullshit-face) (4 compilation-error-face)
+                                          (5 impala-bullshit-face))
+        (,impala-teamcity-all-exp . impala-bullshit-face)
+        ("Process impala finished" . compilation-info-face)
+        ("Process impala exited.*" . compilation-error-face)
         (,impala-separator-exp . compilation-error-face)
         (,impala-script-section-exp . impala-command-large-face)))
 
@@ -177,6 +194,10 @@
   "mode for browsing / navigating output of a impala run"
   (font-lock-add-keywords nil impala-font-lock-keywords)
   (use-local-map impala-key-map))
+;; (define-compilation-mode impala-mode "impala"
+;;   "mode for browsing / navigating output of a impala run"
+;;   (font-lock-add-keywords nil impala-font-lock-keywords)
+;;   (use-local-map impala-key-map))
 
 ;;;;============================================================================
 ;;; running an impala process
